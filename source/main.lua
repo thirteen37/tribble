@@ -6,38 +6,86 @@ import "CoreLibs/timer"
 local gfx <const> = playdate.graphics
 local geo <const> = playdate.geometry
 
+SCREEN_WIDTH, SCREEN_HEIGHT = playdate.display.getSize()
+
+local powerlineTimer = playdate.timer.new(500, 0, 8)
+powerlineTimer.repeats = true
+
 local function drawZones()
   gfx.setLineWidth(2)
-  gfx.setPattern({0xf0, 0xf0, 0xf0, 0xf0, 0x0f, 0x0f, 0x0f, 0x0f})
-  gfx.drawLine(341, 240, 341, 0)
+  gfx.setPattern({0x66, 0x66, 0x33, 0x33, 0x66, 0x66, 0x33, 0x33})
+  gfx.drawLine(SCREEN_WIDTH - 60, SCREEN_HEIGHT, SCREEN_WIDTH - 60, 0)
   gfx.setColor(gfx.kColorBlack)
   gfx.setLineWidth(1)
+end
+
+local function lrotate(x, n)
+  return ((x<<n)&0xff) | (x>>(8-n))
+end
+
+local function rotateArray(a, n)
+  local b = {}
+  for i, value in ipairs(a) do
+	b[(i - n) % #a + 1] = value
+  end
+  return b
+end
+
+local function drawTurret()
+  gfx.setColor(gfx.kColorWhite)
+  gfx.fillCircleAtPoint(SCREEN_WIDTH - 20, SCREEN_HEIGHT / 2, 20 + 10)
+  gfx.setColor(gfx.kColorBlack)
+  gfx.fillCircleAtPoint(SCREEN_WIDTH - 20, SCREEN_HEIGHT / 2, 20)
+  gfx.fillRect(SCREEN_WIDTH - 20, SCREEN_HEIGHT / 2 - 20, 20, 40)
+  gfx.setLineWidth(4)
+  local offset = math.floor(powerlineTimer.value)
+  gfx.setPattern({
+      lrotate(0x0f, offset),
+      lrotate(0x0f, offset),
+      lrotate(0x0f, offset),
+      lrotate(0x0f, offset),
+      lrotate(0xf0, offset),
+      lrotate(0xf0, offset),
+      lrotate(0xf0, offset),
+      lrotate(0xf0, offset),
+  })
+  gfx.drawLine(SCREEN_WIDTH, SCREEN_HEIGHT - 10, SCREEN_WIDTH - 16, SCREEN_HEIGHT - 10)
+  gfx.setPattern(rotateArray({0x0f, 0x0f, 0x0f, 0x0f, 0xf0, 0xf0, 0xf0, 0xf0}, offset))
+  gfx.drawLine(SCREEN_WIDTH - 18, SCREEN_HEIGHT - 10, SCREEN_WIDTH - 18, SCREEN_HEIGHT / 2 + 20)
+  gfx.setColor(gfx.kColorBlack)
+  gfx.setLineWidth(1)
+  local angle = math.min(170, math.max(10, playdate.getCrankPosition()))
+  local turretPoly = geo.rect.new(-5, 20-1, 10, 10):toPolygon()
+  local turretTransform = geo.affineTransform.new()
+  turretTransform:rotate(angle)
+  turretTransform:translate(SCREEN_WIDTH - 20, SCREEN_HEIGHT / 2)
+  turretTransform:transformPolygon(turretPoly)
+  gfx.fillPolygon(turretPoly)
 end
 
 local function drawUI()
   drawZones()
   -- drawScore()
-  -- drawTurret()
-  -- drawGun()
+  drawTurret()
   -- drawBlobs()
 end
 
-local function drawSplash()
+local function isRotated()
   local accel_x, accel_y, accel_z = playdate.readAccelerometer()
   local angle = math.deg(math.atan(accel_y, accel_x))
-  local isRotated = false
-  if angle > -10 and angle < 10 then
-    isRotated = true
-  end
+  return angle > -10 and angle < 10
+end
+
+local function drawSplash()
   local splashImage = gfx.image.new(200, 200, gfx.kColorWhite)
   gfx.pushContext(splashImage)
   gfx.drawText("The Trouble with", 0, 0)
   gfx.drawText("Tribology", 0, 30)
-  if not isRotated then
+  if not isRotated() then
     gfx.drawText("Rotate to start", 0, 60)
   end
   gfx.popContext()
-  if isRotated then
+  if isRotated() then
     splashImage:drawRotated(110, 130, -90)
   else
     splashImage:draw(10, 10)
@@ -45,17 +93,28 @@ local function drawSplash()
 end
 
 local function promptCrank()
+  local w, h = gfx.getTextSize("Use crank")
+  local promptImage = gfx.image.new(w, h, gfx.kColorWhite)
+  if isRotated() and playdate.isCrankDocked() then
+    gfx.pushContext(promptImage)
+    gfx.drawText("Use crank", 0, 0)
+    gfx.popContext()
+  end
+  promptImage:drawRotated(SCREEN_WIDTH - 22 - (h / 2) - 5, (SCREEN_HEIGHT * 0.75), -90)
 end
 
 function playdate.update()
   playdate.startAccelerometer()
   repeat
-    drawUI()
     drawSplash()
-    if playdate.isCrankDocked() then
-      promptCrank()
-    end
+    promptCrank()
+    drawUI()
+    gfx.sprite.update()
+    playdate.timer.updateTimers()
     coroutine.yield()
   until playdate.buttonJustPressed(playdate.kButtonB)
   playdate.stopAccelerometer()
+
+  gfx.sprite.update()
+  playdate.timer.updateTimers()
 end
