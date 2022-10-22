@@ -5,10 +5,11 @@ import "CoreLibs/timer"
 
 local gfx <const> = playdate.graphics
 
-FRICTION = 0.5
 ELASTICITY = 0.8
-THRESHOLD_S = playdate.display.getRefreshRate() -- At least 1 px movement
+FRICTION = 0.5
 MIN_RADIUS = 10
+THRESHOLD_S = playdate.display.getRefreshRate() -- At least 1 px movement
+TIME_STEP = 1 / playdate.display.getRefreshRate()
 
 Ball = {}
 
@@ -16,7 +17,6 @@ function Ball:new(x, y, w, h, a, s, bs)
   local o = {x=x, y=y, w=w, h=h, a=a, s=s, bs=bs}
   setmetatable(o, self)
   self.__index = self
-  o.t = playdate.getCurrentTimeMilliseconds()
   o.r = MIN_RADIUS
   return o
 end
@@ -94,7 +94,7 @@ end
 
 function Ball:update()
   if not self:isActive() then return end
-  local dt = (playdate.getCurrentTimeMilliseconds() - self.t) / 1000
+  local dt = TIME_STEP
   local r = math.rad(self.a)
   local dp = self.s * dt
   local dy, dx = math.sin(r) * dp, math.cos(r) * dp
@@ -106,7 +106,6 @@ function Ball:update()
   if self.s < THRESHOLD_S then
     self.s = 0
   end
-  self.t = playdate.getCurrentTimeMilliseconds()
 end
 
 function Ball:isActive()
