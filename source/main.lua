@@ -33,7 +33,14 @@ local function rotateArray(a, n)
 end
 
 local function calculateTurretAngle()
-  return math.min(170, math.max(10, playdate.getCrankPosition()))
+  local crankAngle = playdate.getCrankPosition()
+  local angle = nil
+  if crankAngle <= 180 then
+    angle = 180 - crankAngle
+  else
+    angle = crankAngle - 180
+  end
+  return math.min(170, math.max(10, angle))
 end
 
 local function drawTurret()
