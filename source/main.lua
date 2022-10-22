@@ -8,6 +8,7 @@ local gfx <const> = playdate.graphics
 local geo <const> = playdate.geometry
 
 SCREEN_WIDTH, SCREEN_HEIGHT = playdate.display.getSize()
+DMZ_WIDTH = 60
 
 local powerlineTimer = playdate.timer.new(500, 0, 8)
 powerlineTimer.repeats = true
@@ -15,7 +16,7 @@ powerlineTimer.repeats = true
 local function drawZones()
   gfx.setLineWidth(2)
   gfx.setPattern({0x66, 0x66, 0x33, 0x33, 0x66, 0x66, 0x33, 0x33})
-  gfx.drawLine(SCREEN_WIDTH - 60, SCREEN_HEIGHT, SCREEN_WIDTH - 60, 0)
+  gfx.drawLine(SCREEN_WIDTH - DMZ_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH - DMZ_WIDTH, 0)
   gfx.setColor(gfx.kColorBlack)
   gfx.setLineWidth(1)
 end
@@ -163,7 +164,7 @@ function playdate.update()
     if playdate.buttonIsPressed(playdate.kButtonB) and not activeBall(balls) then
       -- create new ball
       local newBall = Ball:new(SCREEN_HEIGHT / 2, SCREEN_WIDTH - 20,
-                               SCREEN_HEIGHT, SCREEN_WIDTH,
+                               SCREEN_HEIGHT, SCREEN_WIDTH - DMZ_WIDTH,
                                (calculateTurretAngle() + 180) % 360, 400,
                                balls)
       table.insert(balls, newBall)
