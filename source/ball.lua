@@ -12,8 +12,8 @@ MIN_RADIUS = 10
 
 Ball = {}
 
-function Ball:new(x, y, w, h, a, s)
-  local o = {x=x, y=y, w=w, h=h, a=a, s=s}
+function Ball:new(x, y, w, h, a, s, bs)
+  local o = {x=x, y=y, w=w, h=h, a=a, s=s, bs=bs}
   setmetatable(o, self)
   self.__index = self
   o.t = playdate.getCurrentTimeMilliseconds()
@@ -69,6 +69,29 @@ local function wallCollisions(ball)
   ball.a = ball.a % 360
 end
 
+local function ballCollisions(ball, balls)
+  for _, otherBall in pairs(balls) do
+	if otherBall ~= ball then
+      local dx = ball.x - otherBall.x
+      local dy = ball.y - otherBall.y
+      local tr = otherBall.r + ball.r
+      local intersectionSquared = (tr ^ 2) - (dx ^ 2 + dy ^ 2)
+      if intersectionSquared > 0 then
+        local normal = math.deg(math.atan(dy, dx))
+        local incident = ball.a - (180 + normal)
+        local reflected = (normal - incident) % 360
+        ball.a = reflected
+        local r = math.rad(ball.a)
+        local dp = (intersectionSquared ^ 0.5) / 2
+        local dy, dx = math.sin(r) * dp, math.cos(r) * dp
+        ball.x += dx
+        ball.y += dy
+        ball.s *= ELASTICITY
+      end
+    end
+  end
+end
+
 function Ball:update()
   if not self:isActive() then return end
   local dt = (playdate.getCurrentTimeMilliseconds() - self.t) / 1000
@@ -78,6 +101,7 @@ function Ball:update()
   self.x += dx
   self.y += dy
   wallCollisions(self)
+  ballCollisions(self, self.bs)
   self.s = self.s - (self.s * FRICTION * dt)
   if self.s < THRESHOLD_S then
     self.s = 0

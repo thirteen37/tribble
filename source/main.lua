@@ -157,7 +157,8 @@ function playdate.update()
       -- create new ball
       local newBall = Ball:new(SCREEN_HEIGHT / 2, SCREEN_WIDTH - 20,
                                SCREEN_HEIGHT, SCREEN_WIDTH,
-                               (calculateTurretAngle() + 180) % 360, 400)
+                               (calculateTurretAngle() + 180) % 360, 400,
+                               balls)
       table.insert(balls, newBall)
     end
 
