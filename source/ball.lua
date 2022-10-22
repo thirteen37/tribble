@@ -8,7 +8,7 @@ local gfx <const> = playdate.graphics
 FRICTION = 0.5
 ELASTICITY = 0.8
 THRESHOLD_S = playdate.display.getRefreshRate() -- At least 1 px movement
-MIN_RADIUS = 5
+MIN_RADIUS = 10
 
 Ball = {}
 
