@@ -1,6 +1,5 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
-import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
 import "ball.lua"
@@ -116,27 +115,20 @@ local function activeBall(balls)
   return false
 end
 
-local function updateBalls(balls)
-  for _, ball in pairs(balls) do
-    ball:update()
-  end
-end
-
-local function eraseDirtyBalls(balls)
+local function updateAndDrawBalls(balls)
   local ballImage = gfx.image.new(SCREEN_HEIGHT, SCREEN_WIDTH)
   gfx.pushContext(ballImage)
+  -- clean dirty balls
   for _, ball in pairs(balls) do
     if ball:isActive() then
       ball:erase()
     end
   end
-  gfx.popContext()
-  ballImage:drawRotated(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, -90)
-end
-
-local function drawBalls(balls)
-  local ballImage = gfx.image.new(SCREEN_HEIGHT, SCREEN_WIDTH)
-  gfx.pushContext(ballImage)
+  -- move balls
+  for _, ball in pairs(balls) do
+    ball:update()
+  end
+  -- draw balls
   for _, ball in pairs(balls) do
     ball:draw()
   end
@@ -151,7 +143,7 @@ function playdate.update()
     drawSplash()
     promptCrank()
     drawUI()
-    gfx.sprite.update()
+
     playdate.timer.updateTimers()
     coroutine.yield()
   until playdate.buttonIsPressed(playdate.kButtonB) and isRotated() and not playdate.isCrankDocked()
@@ -161,7 +153,6 @@ function playdate.update()
   local inProgress = true
   local balls = {}
   while inProgress do
-    drawUI()
     if playdate.buttonIsPressed(playdate.kButtonB) and not activeBall(balls) then
       -- create new ball
       local newBall = Ball:new(SCREEN_HEIGHT / 2, SCREEN_WIDTH - 20,
@@ -169,10 +160,10 @@ function playdate.update()
                                (calculateTurretAngle() + 180) % 360, 400)
       table.insert(balls, newBall)
     end
-    eraseDirtyBalls(balls)
-    updateBalls(balls)
-    drawBalls(balls)
-    gfx.sprite.update()
+
+    updateAndDrawBalls(balls)
+    drawUI()
+
     playdate.timer.updateTimers()
     coroutine.yield()
   end
