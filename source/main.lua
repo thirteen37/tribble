@@ -33,6 +33,10 @@ local function rotateArray(a, n)
   return b
 end
 
+local function calculateTurretAngle()
+  return math.min(170, math.max(10, playdate.getCrankPosition()))
+end
+
 local function drawTurret()
   gfx.setColor(gfx.kColorWhite)
   gfx.fillCircleAtPoint(SCREEN_WIDTH - 20, SCREEN_HEIGHT / 2, 20 + 10)
@@ -56,10 +60,9 @@ local function drawTurret()
   gfx.drawLine(SCREEN_WIDTH - 18, SCREEN_HEIGHT - 10, SCREEN_WIDTH - 18, SCREEN_HEIGHT / 2 + 20)
   gfx.setColor(gfx.kColorBlack)
   gfx.setLineWidth(1)
-  local angle = math.min(170, math.max(10, playdate.getCrankPosition()))
   local turretPoly = geo.rect.new(-5, 20-1, 10, 10):toPolygon()
   local turretTransform = geo.affineTransform.new()
-  turretTransform:rotate(angle)
+  turretTransform:rotate(calculateTurretAngle())
   turretTransform:translate(SCREEN_WIDTH - 20, SCREEN_HEIGHT / 2)
   turretTransform:transformPolygon(turretPoly)
   gfx.fillPolygon(turretPoly)
@@ -119,10 +122,26 @@ local function updateBalls(balls)
   end
 end
 
+local function eraseDirtyBalls(balls)
+  local ballImage = gfx.image.new(SCREEN_HEIGHT, SCREEN_WIDTH)
+  gfx.pushContext(ballImage)
+  for _, ball in pairs(balls) do
+    if ball:isActive() then
+      ball:erase()
+    end
+  end
+  gfx.popContext()
+  ballImage:drawRotated(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, -90)
+end
+
 local function drawBalls(balls)
+  local ballImage = gfx.image.new(SCREEN_HEIGHT, SCREEN_WIDTH)
+  gfx.pushContext(ballImage)
   for _, ball in pairs(balls) do
     ball:draw()
   end
+  gfx.popContext()
+  ballImage:drawRotated(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, -90)
 end
 
 function playdate.update()
@@ -145,10 +164,12 @@ function playdate.update()
     drawUI()
     if playdate.buttonIsPressed(playdate.kButtonB) and not activeBall(balls) then
       -- create new ball
-      local angle = math.min(170, math.max(10, playdate.getCrankPosition()))
-      local newBall = Ball:new(SCREEN_HEIGHT / 2, SCREEN_WIDTH - 20, 100, angle)
+      local newBall = Ball:new(SCREEN_HEIGHT / 2, SCREEN_WIDTH - 20,
+                               SCREEN_HEIGHT, SCREEN_WIDTH,
+                               (calculateTurretAngle() + 180) % 360, 400)
       table.insert(balls, newBall)
     end
+    eraseDirtyBalls(balls)
     updateBalls(balls)
     drawBalls(balls)
     gfx.sprite.update()
