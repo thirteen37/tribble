@@ -3,6 +3,8 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
+import "ball.lua"
+
 local gfx <const> = playdate.graphics
 local geo <const> = playdate.geometry
 
@@ -67,7 +69,6 @@ local function drawUI()
   drawZones()
   -- drawScore()
   drawTurret()
-  -- drawBlobs()
 end
 
 local function isRotated()
@@ -103,7 +104,29 @@ local function promptCrank()
   promptImage:drawRotated(SCREEN_WIDTH - 22 - (h / 2) - 5, (SCREEN_HEIGHT * 0.75), -90)
 end
 
+local function activeBall(balls)
+  for _, ball in pairs(balls) do
+    if ball:isActive() then
+      return true
+    end
+  end
+  return false
+end
+
+local function updateBalls(balls)
+  for _, ball in pairs(balls) do
+    ball:update()
+  end
+end
+
+local function drawBalls(balls)
+  for _, ball in pairs(balls) do
+    ball:draw()
+  end
+end
+
 function playdate.update()
+  -- Home screen
   playdate.startAccelerometer()
   repeat
     drawSplash()
@@ -112,9 +135,25 @@ function playdate.update()
     gfx.sprite.update()
     playdate.timer.updateTimers()
     coroutine.yield()
-  until playdate.buttonJustPressed(playdate.kButtonB)
+  until playdate.buttonIsPressed(playdate.kButtonB) and isRotated() and not playdate.isCrankDocked()
   playdate.stopAccelerometer()
-
-  gfx.sprite.update()
-  playdate.timer.updateTimers()
+  gfx.clear()
+  -- Game
+  local inProgress = true
+  local balls = {}
+  while inProgress do
+    drawUI()
+    if playdate.buttonIsPressed(playdate.kButtonB) and not activeBall(balls) then
+      -- create new ball
+      local angle = math.min(170, math.max(10, playdate.getCrankPosition()))
+      local newBall = Ball:new(SCREEN_HEIGHT / 2, SCREEN_WIDTH - 20, 100, angle)
+      table.insert(balls, newBall)
+    end
+    updateBalls(balls)
+    drawBalls(balls)
+    gfx.sprite.update()
+    playdate.timer.updateTimers()
+    coroutine.yield()
+  end
+  -- End game
 end
