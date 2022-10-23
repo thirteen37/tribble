@@ -10,7 +10,8 @@ STATE_GROW      = 2
 STATE_GROWING   = 3
 STATE_IDLE      = 4
 STATE_EXPLODING = 5
-STATE_DEAD      = 6
+STATE_DYING     = 6
+STATE_DEAD      = 7
 
 ELASTICITY  = 0.8
 FRICTION    = 0.5
@@ -133,6 +134,10 @@ function Ball:update()
     wallCollisions(self)
     ballCollisions(self)
     self.s = self.s - (self.s * FRICTION * dt)
+    if self.y > self.h and self.a < 180 then
+      self.s = 0
+      self.state = STATE_DYING
+    end
     if self.s < THRESHOLD_S then
       self.s = 0
       self.x = math.floor(self.x)
@@ -148,9 +153,14 @@ function Ball:update()
     if self.animator:ended() then
       self.state = STATE_IDLE
     end
+  elseif self.state == STATE_DYING then
+    self.state = STATE_DEAD
   end
 end
 
 function Ball:isActive()
-  return self.state == STATE_MOVING or self.state == STATE_GROW or self.state == STATE_GROWING
+  return self.state == STATE_MOVING or
+    self.state == STATE_GROW or
+    self.state == STATE_GROWING or
+    self.state == STATE_DYING
 end
