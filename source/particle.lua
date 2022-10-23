@@ -5,7 +5,6 @@ local gfx <const> = playdate.graphics
 DEFAULT_COUNT = 20
 DEFAULT_DURATION = 1000
 DEFAULT_SCALE = 10
-SPEED_FACTOR = 20
 
 Sparks = {}
 
@@ -26,19 +25,14 @@ end
 function Sparks:draw()
   local ended = false
   gfx.setImageDrawMode("NXOR")
+  if self.li then
+    self.li:drawCentered(self.x, self.y)
+  end
   if not self.a:ended() then
-    if self.li then
-      self.li:drawCentered(self.lx, self.ly)
-    end
     local a = self.a:currentValue()
     self.li = self.i:scaledImage(a):blurredImage(a, 1, gfx.image.kDitherTypeScreen, true)
-    self.lx = self.x
-    self.ly = self.y + a * SPEED_FACTOR
-    self.li:drawCentered(self.lx, self.ly)
+    self.li:drawCentered(self.x, self.y)
   else
-    if self.li then
-      self.li:drawCentered(self.lx, self.ly)
-    end
     self.li = nil
     ended = true
   end

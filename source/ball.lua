@@ -1,5 +1,7 @@
 import "CoreLibs/animator"
 
+import "particle.lua"
+
 local gfx <const> = playdate.graphics
 
 STATE_MOVING    = 1
@@ -29,13 +31,22 @@ function Ball:new(x, y, w, h, a, s, bs)
 end
 
 function Ball:draw()
-  gfx.fillCircleAtPoint(self.x, self.y, self.r)
+  if self.state == STATE_DYING then
+    if not self.sparks:draw() then
+      self.state = STATE_DEAD
+    end
+  elseif self.state == STATE_DEAD then
+  else
+    gfx.fillCircleAtPoint(self.x, self.y, self.r)
+  end
 end
 
 function Ball:erase()
-  gfx.setColor(gfx.kColorWhite)
-  gfx.fillCircleAtPoint(self.x, self.y, self.r)
-  gfx.setColor(gfx.kColorBlack)
+  if self.state == STATE_MOVING then
+    gfx.setColor(gfx.kColorWhite)
+    gfx.fillCircleAtPoint(self.x, self.y, self.r)
+    gfx.setColor(gfx.kColorBlack)
+  end
 end
 
 local function wallCollisions(ball)
@@ -132,10 +143,9 @@ function Ball:update()
     ballCollisions(self)
     self.s = self.s - (self.s * FRICTION * dt)
     if self.y > self.h and self.a < 180 then
-      self.s = 0
+      self.sparks = Sparks:new(self.x, self.y, self.r * 2, self.r * 2)
       self.state = STATE_DYING
-    end
-    if self.s < THRESHOLD_S then
+    elseif self.s < THRESHOLD_S then
       self.s = 0
       self.x = math.floor(self.x)
       self.y = math.floor(self.y)
@@ -151,7 +161,6 @@ function Ball:update()
       self.state = STATE_IDLE
     end
   elseif self.state == STATE_DYING then
-    self.state = STATE_DEAD
   end
 end
 
