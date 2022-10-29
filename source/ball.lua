@@ -17,6 +17,8 @@ ELASTICITY    = 0.8
 FRICTION      = 0.5
 GROWTH_RATE   = 100
 MIN_RADIUS    = 10
+TILT_RANGE    = 15
+TILT_STEP     = 15
 STARTING_LIFE = 3
 THRESHOLD_S   = playdate.display.getRefreshRate() * 0.2  -- At least 0.5 px movement per frame
 TIME_STEP     = 1 / playdate.display.getRefreshRate()
@@ -36,6 +38,7 @@ function Ball:new(x, y, w, h, a, s, bs)
   o.r = MIN_RADIUS
   o.state = STATE_MOVING
   o.l = STARTING_LIFE
+  o.t = math.random(-TILT_RANGE, TILT_RANGE)
   return o
 end
 
@@ -51,6 +54,7 @@ function Ball:draw()
       local t = geo.affineTransform.new()
       t:translate(-1.5, -2.5)
       t:scale(self.r / 4)
+      t:rotate(self.t)
       t:translate(self.x, self.y)
       gfx.setColor(gfx.kColorWhite)
       gfx.fillPolygon(t:transformedPolygon(NUMBERS[self.l]))
@@ -66,8 +70,10 @@ local function wallCollisions(ball)
     assert(ball.a > 90 and ball.a < 270, "invalid x approach: " .. ball.a)
     if ball.a < 180 then
       ball.a = 180 - ball.a
+      ball.t += TILT_STEP
     else
       ball.a = 360 - (ball.a - 180)
+      ball.t -= TILT_STEP
     end
     ball.s *= ELASTICITY
   end
@@ -77,8 +83,10 @@ local function wallCollisions(ball)
     assert(ball.a > 180, "invalid y approach: " .. ball.a)
     if ball.a < 270 then
       ball.a = 180 - (ball.a - 180)
+      ball.t += TILT_STEP
     else
       ball.a = 360 - ball.a
+      ball.t -= TILT_STEP
     end
     ball.s *= ELASTICITY
   end
@@ -88,8 +96,10 @@ local function wallCollisions(ball)
     assert(ball.a < 90 or ball.a > 270, "invalid x approach: " .. ball.a)
     if ball.a < 90 then
       ball.a = 90 + (90 - ball.a)
+      ball.t -= TILT_STEP
     else
       ball.a = 270 - (ball.a - 270)
+      ball.t += TILT_STEP
     end
     ball.s *= ELASTICITY
   end
@@ -106,6 +116,11 @@ local function ballCollisions(ball)
       if intersectionSquared > 0 then
         otherBall:collide()
         local normal = math.deg(math.atan(dy, dx))
+        if normal < 180 then
+          ball.t -= TILT_STEP
+        else
+          ball.t += TILT_STEP
+        end
         local incident = ball.a - (180 + normal)
         local reflected = (normal - incident) % 360
         ball.a = reflected
