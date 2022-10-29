@@ -124,14 +124,8 @@ local function activeBall(balls)
 end
 
 local function updateAndDrawBalls(balls)
-  local ballImage = gfx.image.new(SCREEN_HEIGHT, SCREEN_WIDTH)
+  local ballImage = gfx.image.new(SCREEN_HEIGHT, SCREEN_WIDTH, gfx.kColorWhite)
   gfx.pushContext(ballImage)
-  -- clean dirty balls
-  for _, ball in pairs(balls) do
-    if ball:isActive() then
-      ball:erase()
-    end
-  end
   -- move balls
   for _, ball in pairs(balls) do
     ball:update()
@@ -139,6 +133,12 @@ local function updateAndDrawBalls(balls)
   -- draw balls
   for _, ball in pairs(balls) do
     ball:draw()
+  end
+  -- prune dead balls
+  for i, ball in pairs(balls) do
+    if ball:isDead() then
+      balls[i] = nil
+    end
   end
   gfx.popContext()
   ballImage:drawRotated(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, -90)

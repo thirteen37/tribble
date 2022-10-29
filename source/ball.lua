@@ -12,12 +12,13 @@ STATE_EXPLODING = 5
 STATE_DYING     = 6
 STATE_DEAD      = 7
 
-ELASTICITY  = 0.8
-FRICTION    = 0.5
-GROWTH_RATE = 100
-MIN_RADIUS  = 10
-THRESHOLD_S = playdate.display.getRefreshRate() -- At least 1 px movement
-TIME_STEP   = 1 / playdate.display.getRefreshRate()
+ELASTICITY    = 0.8
+FRICTION      = 0.5
+GROWTH_RATE   = 100
+MIN_RADIUS    = 10
+STARTING_LIFE = 3
+THRESHOLD_S   = playdate.display.getRefreshRate() * 0.2  -- At least 0.5 px movement per frame
+TIME_STEP     = 1 / playdate.display.getRefreshRate()
 
 Ball = {}
 
@@ -27,25 +28,18 @@ function Ball:new(x, y, w, h, a, s, bs)
   self.__index = self
   o.r = MIN_RADIUS
   o.state = STATE_MOVING
+  o.l = STARTING_LIFE
   return o
 end
 
 function Ball:draw()
-  if self.state == STATE_DYING then
+  if self.state == STATE_EXPLODING then
     if not self.sparks:draw() then
       self.state = STATE_DEAD
     end
   elseif self.state == STATE_DEAD then
   else
     gfx.fillCircleAtPoint(self.x, self.y, self.r)
-  end
-end
-
-function Ball:erase()
-  if self.state == STATE_MOVING then
-    gfx.setColor(gfx.kColorWhite)
-    gfx.fillCircleAtPoint(self.x, self.y, self.r)
-    gfx.setColor(gfx.kColorBlack)
   end
 end
 
@@ -89,12 +83,13 @@ end
 
 local function ballCollisions(ball)
   for _, otherBall in pairs(ball.bs) do
-	if otherBall ~= ball then
+	if otherBall ~= ball and otherBall.state == STATE_IDLE then
       local dx = ball.x - otherBall.x
       local dy = ball.y - otherBall.y
       local tr = otherBall.r + ball.r
       local intersectionSquared = (tr ^ 2) - (dx ^ 2 + dy ^ 2)
       if intersectionSquared > 0 then
+        otherBall:collide()
         local normal = math.deg(math.atan(dy, dx))
         local incident = ball.a - (180 + normal)
         local reflected = (normal - incident) % 360
@@ -113,7 +108,7 @@ end
 local function maxRadius(ball)
   local rs = {}
   for _, otherBall in pairs(ball.bs) do
-    if otherBall ~= ball then
+    if otherBall ~= ball and otherBall.state == STATE_IDLE then
       local dx = ball.x - otherBall.x
       local dy = ball.y - otherBall.y
       local maxRadius = ((dx ^ 2) + (dy ^ 2)) ^ 0.5 - otherBall.r
@@ -133,17 +128,15 @@ end
 
 function Ball:update()
   if self.state == STATE_MOVING then
-    local dt = TIME_STEP
     local r = math.rad(self.a)
-    local dp = self.s * dt
+    local dp = self.s * TIME_STEP
     local dy, dx = math.sin(r) * dp, math.cos(r) * dp
     self.x += dx
     self.y += dy
     wallCollisions(self)
     ballCollisions(self)
-    self.s = self.s - (self.s * FRICTION * dt)
-    if self.y > self.h and self.a < 180 then
-      self.sparks = Sparks:new(self.x, self.y, self.r * 2, self.r * 2)
+    self.s = self.s - (self.s * FRICTION * TIME_STEP)
+    if self.y > self.h - self.r and self.a < 180 then
       self.state = STATE_DYING
     elseif self.s < THRESHOLD_S then
       self.s = 0
@@ -161,6 +154,8 @@ function Ball:update()
       self.state = STATE_IDLE
     end
   elseif self.state == STATE_DYING then
+    self.sparks = Sparks:new(self.x, self.y, self.r * 2, self.r * 2)
+    self.state = STATE_EXPLODING
   end
 end
 
@@ -169,4 +164,15 @@ function Ball:isActive()
     self.state == STATE_GROW or
     self.state == STATE_GROWING or
     self.state == STATE_DYING
+end
+
+function Ball:collide()
+  self.l -= 1
+  if self.l <= 0 then
+    self.state = STATE_DYING
+  end
+end
+
+function Ball:isDead()
+  return self.state == STATE_DEAD
 end
