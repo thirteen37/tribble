@@ -77,7 +77,6 @@ local function wallCollisions(ball)
     end
     ball.s *= ELASTICITY
   end
-  -- bottom
   ball.a = ball.a % 360
 end
 
@@ -175,4 +174,8 @@ end
 
 function Ball:isDead()
   return self.state == STATE_DEAD
+end
+
+function Ball:isDying()
+  return self.state == STATE_DYING
 end

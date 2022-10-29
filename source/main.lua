@@ -144,6 +144,16 @@ local function updateAndDrawBalls(balls)
   ballImage:drawRotated(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, -90)
 end
 
+local function drawGameOver()
+  local splashImage = gfx.image.new(200, 200, gfx.kColorWhite)
+  gfx.pushContext(splashImage)
+  gfx.drawText("Game over", 0, 0)
+  gfx.popContext()
+  gfx.setImageDrawMode("NXOR")
+  splashImage:drawRotated(110, 130, -90)
+  gfx.setImageDrawMode("copy")
+end
+
 function playdate.update()
   -- Home screen
   playdate.startAccelerometer()
@@ -160,21 +170,35 @@ function playdate.update()
   -- Game
   local inProgress = true
   local balls = {}
+  local newBall = nil
   while inProgress do
     if playdate.buttonIsPressed(playdate.kButtonB) and not activeBall(balls) then
       -- create new ball
-      local newBall = Ball:new(SCREEN_HEIGHT / 2, SCREEN_WIDTH - 20,
-                               SCREEN_HEIGHT, SCREEN_WIDTH - DMZ_WIDTH,
-                               (calculateTurretAngle() + 180) % 360, 400,
-                               balls)
+      newBall = Ball:new(SCREEN_HEIGHT / 2, SCREEN_WIDTH - 20,
+                         SCREEN_HEIGHT, SCREEN_WIDTH - DMZ_WIDTH,
+                         (calculateTurretAngle() + 180) % 360, 400,
+                         balls)
       table.insert(balls, newBall)
     end
 
     updateAndDrawBalls(balls)
     drawUI()
 
+    if newBall and newBall:isDying() then
+      break
+    end
+
     playdate.timer.updateTimers()
     coroutine.yield()
   end
+
   -- End game
+  repeat
+    updateAndDrawBalls(balls)
+    drawUI()
+    drawGameOver()
+
+    playdate.timer.updateTimers()
+    coroutine.yield()
+  until playdate.buttonJustPressed(playdate.kButtonB)
 end
