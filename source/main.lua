@@ -149,12 +149,9 @@ local function updateAndDrawBalls(balls)
 end
 
 local function drawGameOver()
-  local splashImage = gfx.image.new(200, 200, gfx.kColorWhite)
-  gfx.pushContext(splashImage)
-  gfx.drawText("Game over", 0, 0)
-  gfx.popContext()
+  local splashImage = gfx.image.new("images/gameover")
   gfx.setImageDrawMode("NXOR")
-  splashImage:drawRotated(110, 130, -90)
+  splashImage:drawRotated(160, 130, -90)
   gfx.setImageDrawMode("copy")
 end
 
