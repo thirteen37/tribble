@@ -93,18 +93,17 @@ local function isRotated()
 end
 
 local function drawSplash()
-  local splashImage = gfx.image.new(200, 200, gfx.kColorWhite)
+  local splashImage = gfx.image.new(240, 240, gfx.kColorWhite)
   gfx.pushContext(splashImage)
-  gfx.drawText("The Trouble with", 0, 0)
-  gfx.drawText("Tribology", 0, 30)
+  gfx.image.new("images/splash"):draw(10, 40)
   if not isRotated() then
     gfx.drawText("Rotate to start", 0, 60)
   end
   gfx.popContext()
   if isRotated() then
-    splashImage:drawRotated(110, 130, -90)
+    splashImage:drawRotated(120, 120, -90)
   else
-    splashImage:draw(10, 10)
+    splashImage:draw(0, 0)
   end
 end
 
