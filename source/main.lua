@@ -210,6 +210,9 @@ function playdate.update()
   end
   if state == STATE_GAMEOVER then
     if gameOver() then
+      balls = {}
+      newBall = nil
+      gfx.clear()
       playdate.startAccelerometer()
       state = STATE_SPLASH
     end
