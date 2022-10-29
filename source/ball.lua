@@ -39,13 +39,17 @@ function Ball:new(x, y, w, h, a, s, bs)
   o.state = STATE_MOVING
   o.l = STARTING_LIFE
   o.t = math.random(-TILT_RANGE, TILT_RANGE)
+  o.sparks = {}
   return o
 end
 
 function Ball:draw()
   if self.state == STATE_EXPLODING then
-    if not self.sparks:draw() then
-      self.state = STATE_DEAD
+    self.state = STATE_DEAD
+    for _, spark in pairs(self.sparks) do
+      if spark:draw() then
+        self.state = STATE_EXPLODING
+      end
     end
   elseif self.state == STATE_DEAD then
   else
@@ -60,7 +64,16 @@ function Ball:draw()
       gfx.fillPolygon(t:transformedPolygon(NUMBERS[self.l]))
       gfx.setColor(gfx.kColorBlack)
     end
+    for i, spark in pairs(self.sparks) do
+      if not spark:draw() then
+        self.sparks[i] = nil
+      end
+    end
   end
+end
+
+function Ball:collisionSparks(x, y)
+  table.insert(self.sparks, Sparks:new(x, y, self.r, self.r, nil, nil, 1))
 end
 
 local function wallCollisions(ball)
@@ -76,6 +89,7 @@ local function wallCollisions(ball)
       ball.t -= TILT_STEP
     end
     ball.s *= ELASTICITY
+    ball:collisionSparks(0, ball.y)
   end
   -- top
   if ball.y < ball.r then
@@ -89,6 +103,7 @@ local function wallCollisions(ball)
       ball.t -= TILT_STEP
     end
     ball.s *= ELASTICITY
+    ball:collisionSparks(ball.x, 0)
   end
   -- right
   if ball.x > ball.w - ball.r then
@@ -102,6 +117,7 @@ local function wallCollisions(ball)
       ball.t += TILT_STEP
     end
     ball.s *= ELASTICITY
+    ball:collisionSparks(ball.w, ball.y)
   end
   ball.a = ball.a % 360
 end
@@ -127,6 +143,7 @@ local function ballCollisions(ball)
         local r = math.rad(ball.a)
         local dp = (intersectionSquared ^ 0.5) / 2
         local dy, dx = math.sin(r) * dp, math.cos(r) * dp
+        ball:collisionSparks(ball.x, ball.y)
         ball.x += dx
         ball.y += dy
         ball.s *= ELASTICITY
@@ -184,7 +201,7 @@ function Ball:update()
       self.state = STATE_IDLE
     end
   elseif self.state == STATE_DYING then
-    self.sparks = Sparks:new(self.x, self.y, self.r * 2, self.r * 2)
+    table.insert(self.sparks, Sparks:new(self.x, self.y, self.r * 2, self.r * 2))
     self.state = STATE_EXPLODING
   end
 end

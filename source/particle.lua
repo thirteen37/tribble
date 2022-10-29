@@ -13,7 +13,7 @@ gfx.popContext()
 
 Sparks = {}
 
-function Sparks:new(x, y, w, h, t, s)
+function Sparks:new(x, y, w, h, t, s, b)
   local o = {x=x, y=y, w=w, h=h}
   setmetatable(o, self)
   self.__index = self
@@ -25,8 +25,9 @@ function Sparks:new(x, y, w, h, t, s)
   end
   t = t or DEFAULT_DURATION
   s = s or DEFAULT_SCALE
+  b = b or s
   o.sa = gfx.animator.new(t, 0, s, playdate.easingFunctions.outCubic)
-  o.ba = gfx.animator.new(t, 0, s, playdate.easingFunctions.outCubic)
+  o.ba = gfx.animator.new(t, 1, b, playdate.easingFunctions.outCubic)
   return o
 end
 
@@ -35,7 +36,7 @@ function Sparks:draw()
   if not self.sa:ended() and not self.ba:ended() then
     local s = self.sa:currentValue()
     local b = self.ba:currentValue()
-    local i = sparkImage:scaledImage(s):blurredImage(b, 1, gfx.image.kDitherTypeFloydSteinberg, true)
+    local i = sparkImage:scaledImage(b):blurredImage(b, 1, gfx.image.kDitherTypeFloydSteinberg, true)
     for _, value in pairs(self.s) do
       local x, y = value[1], value[2]
       i:drawCentered(self.x + x * s, self.y + y * s)
