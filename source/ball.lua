@@ -3,6 +3,7 @@ import "CoreLibs/animator"
 import "particle.lua"
 
 local gfx <const> = playdate.graphics
+local geo <const> = playdate.geometry
 
 STATE_MOVING    = 1
 STATE_GROW      = 2
@@ -22,6 +23,12 @@ TIME_STEP     = 1 / playdate.display.getRefreshRate()
 
 Ball = {}
 
+NUMBERS = {
+  geo.polygon.new(0,0, 2,0, 2,4, 3,4, 3,5, 0,5, 0,4, 1,4, 1,1, 0,1, 0,1, 0,0),
+  geo.polygon.new(0,0, 3,0, 3,3, 1,3, 1,4, 3,4, 3,5, 0,5, 0,2, 2,2, 2,1, 0,1, 0,0),
+  geo.polygon.new(0,0, 3,0, 3,5, 0,5, 0,4, 2,4, 2,3, 1,3, 1,2, 2,2, 2,1, 0,1, 0,0),
+}
+
 function Ball:new(x, y, w, h, a, s, bs)
   local o = {x=x, y=y, w=w, h=h, a=a, s=s, bs=bs}
   setmetatable(o, self)
@@ -40,6 +47,15 @@ function Ball:draw()
   elseif self.state == STATE_DEAD then
   else
     gfx.fillCircleAtPoint(self.x, self.y, self.r)
+    if self.l > 0 then
+      local t = geo.affineTransform.new()
+      t:translate(-1.5, -2.5)
+      t:scale(self.r / 4)
+      t:translate(self.x, self.y)
+      gfx.setColor(gfx.kColorWhite)
+      gfx.fillPolygon(t:transformedPolygon(NUMBERS[self.l]))
+      gfx.setColor(gfx.kColorBlack)
+    end
   end
 end
 
