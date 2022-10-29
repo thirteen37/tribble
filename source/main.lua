@@ -7,8 +7,13 @@ import "ball.lua"
 local gfx <const> = playdate.graphics
 local geo <const> = playdate.geometry
 
-SCREEN_WIDTH, SCREEN_HEIGHT = playdate.display.getSize()
-DMZ_WIDTH = 60
+local SCREEN_WIDTH, SCREEN_HEIGHT = playdate.display.getSize()
+local DMZ_WIDTH = 60
+
+local STATE_SPLASH   = 1
+local STATE_PLAY     = 2
+local STATE_GAMEOVER = 3
+local state
 
 local powerlineTimer = playdate.timer.new(500, 0, 8)
 powerlineTimer.repeats = true
@@ -154,51 +159,60 @@ local function drawGameOver()
   gfx.setImageDrawMode("copy")
 end
 
-function playdate.update()
-  -- Home screen
-  playdate.startAccelerometer()
-  repeat
-    drawSplash()
-    promptCrank()
-    drawUI()
+local function splash()
+  drawSplash()
+  promptCrank()
+  drawUI()
+  return playdate.buttonJustPressed(playdate.kButtonB) and isRotated() and not playdate.isCrankDocked()
+end
 
-    playdate.timer.updateTimers()
-    coroutine.yield()
-  until playdate.buttonIsPressed(playdate.kButtonB) and isRotated() and not playdate.isCrankDocked()
-  playdate.stopAccelerometer()
-  gfx.clear()
-  -- Game
-  local inProgress = true
-  local balls = {}
-  local newBall = nil
-  while inProgress do
-    if playdate.buttonIsPressed(playdate.kButtonB) and not activeBall(balls) then
-      -- create new ball
-      newBall = Ball:new(SCREEN_HEIGHT / 2, SCREEN_WIDTH - 20,
-                         SCREEN_HEIGHT, SCREEN_WIDTH - DMZ_WIDTH,
-                         (calculateTurretAngle() + 180) % 360, 400,
-                         balls)
-      table.insert(balls, newBall)
-    end
-
-    updateAndDrawBalls(balls)
-    drawUI()
-
-    if newBall and newBall:isDying() then
-      break
-    end
-
-    playdate.timer.updateTimers()
-    coroutine.yield()
+local balls = {}
+local newBall = nil
+local function play()
+  if playdate.buttonJustPressed(playdate.kButtonB) and not activeBall(balls) then
+    -- create new ball
+    newBall = Ball:new(SCREEN_HEIGHT / 2, SCREEN_WIDTH - 20,
+                       SCREEN_HEIGHT, SCREEN_WIDTH - DMZ_WIDTH,
+                       (calculateTurretAngle() + 180) % 360, 400,
+                       balls)
+    table.insert(balls, newBall)
   end
 
-  -- End game
-  repeat
-    updateAndDrawBalls(balls)
-    drawUI()
-    drawGameOver()
+  updateAndDrawBalls(balls)
+  drawUI()
 
-    playdate.timer.updateTimers()
-    coroutine.yield()
-  until playdate.buttonJustPressed(playdate.kButtonB)
+  return newBall and newBall:isDying()
+end
+
+local function gameOver()
+  updateAndDrawBalls(balls)
+  drawUI()
+  drawGameOver()
+  return playdate.buttonJustPressed(playdate.kButtonB)
+end
+
+function playdate.update()
+  if state == nil then
+    playdate.startAccelerometer()
+    state = STATE_SPLASH
+  end
+  if state == STATE_SPLASH then
+    if splash() then
+      playdate.stopAccelerometer()
+      gfx.clear()
+      state = STATE_PLAY
+    end
+  end
+  if state == STATE_PLAY then
+    if play() then
+      state = STATE_GAMEOVER
+    end
+  end
+  if state == STATE_GAMEOVER then
+    if gameOver() then
+      playdate.startAccelerometer()
+      state = STATE_SPLASH
+    end
+  end
+  playdate.timer.updateTimers()
 end
