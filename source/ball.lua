@@ -227,3 +227,7 @@ end
 function Ball:isDying()
   return self.state == STATE_DYING
 end
+
+function Ball:explode()
+  self.state = STATE_DYING
+end

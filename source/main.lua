@@ -177,7 +177,14 @@ local function play()
   updateAndDrawBalls(balls)
   drawUI()
 
-  return newBall and newBall:isDying()
+  if newBall and newBall:isDying() then
+    for _, ball in pairs(balls) do
+      ball:explode()
+    end
+    return true
+  else
+    return false
+  end
 end
 
 local function gameOver()
