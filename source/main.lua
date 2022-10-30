@@ -156,19 +156,23 @@ local function drawSplash()
   end
 end
 
+local function fastInOut(t, b, c, d)
+  local a = t / d * math.pi
+  local x = (math.cos(a) + 1) / 2
+  return x * c + b
+end
+
 local crankPromptAnimator
 local function promptCrank()
-  local aw, h = gfx.getTextSize("Use crank")
-  local w = 40 -- (SCREEN_HEIGHT / 2 - 30) / 2
-  if not crankPromptAnimator then
-    crankPromptAnimator = gfx.animator.new(1500, 0, w - aw)
-    crankPromptAnimator.repeatCount = -1
-    crankPromptAnimator.reverses = true
-  end
+  local w, h = gfx.getTextSize("Crank it!")
   local promptImage = gfx.image.new(w, h, gfx.kColorWhite)
+  if not crankPromptAnimator then
+    crankPromptAnimator = gfx.animator.new(1500, h, -h, fastInOut)
+    crankPromptAnimator.repeatCount = -1
+  end
   if playdate.isCrankDocked() then
     gfx.pushContext(promptImage)
-    gfx.drawText("Use crank", crankPromptAnimator:currentValue(), 0)
+    gfx.drawText("Crank it!", 0, crankPromptAnimator:currentValue())
     gfx.popContext()
   else
     crankPromptAnimator = nil
