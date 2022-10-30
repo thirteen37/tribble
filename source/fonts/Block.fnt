@@ -1,8 +1,8 @@
---metrics={"baseline":6,"xHeight":3,"capHeight":1,"pairs":{"S.":[0,0],". ":[0,0]},"left":[],"right":[]}
-datalen=1076
-data=iVBORw0KGgoAAAANSUhEUgAAADIAAAA/CAYAAACioZtvAAAAAXNSR0IArs4c6QAAAt9JREFUaEPtWNFywyAMW///o7fLbuSIT7JkIGmbdU9rCwRZtizn8XWTv8cfju8OT/yufd6WZOu23/u92//beucZcW+7jr03e3C7eA+kPaC/IPqu/R6BxLPQOdXzfs+oAkGM9EzZEUwygQFJWRoBghhi7I0w5zJyWLcigoylCM6trylG3l67WJq8HTAHCFKemPvoc1lCjVbQy/Qh2AoIu7ADxJHaTKaVdNtAWnGqhogUixU2AzfdOBUjsVZQBN3GmUkxAhIDmN71LCCu1GbMKZbs1Hor5aoy8rLgqk4X+aqs2FFxOy6Z7aN7le1eKaGuh2KiMGwamfxW5gw1AmTP6NNYiscoI6rbM5lGRhIFxu03+15VIyyiTp6zVED9QUmtdAC3U62XlVX3YqsGK5bnI7XE0iim6qHenGJ3ne7KS8fASOlWjKADHWs/FNVkHpEOOzKitJsd6AJGSubuTSU5A4LolJHpIuFOjS6QNAgf+XVl8ap1qrO73Tk1dCHdlCtA6Ytc90FQHPmNAlDxRmivOo8BSX2aYsQ1by5zjnOuANnZfQYjqnFWgFD3G/PXjTSTxljrcf5w38rI2egjv1fJqvucqkVxPZQcTRNfVdkLawQplNMf5PTWXbpi91F90elyhBHH+M28QUR7mcezGalEEMlqbH6OCrY1pTmoOo9UaoQpouojFUb2wHzk15XFq9Y5FsVJBddDnYbrLCCsYCtAVLEflEwBiSrDZNBZNwNC7kUNpo+m0zMyjZcXAAsiExm7+9ozgTiOmF3aDQAE4m5euW4WyH6Xf9FHsmhFSWbFvn2fjdOovlzG6csHV3ncYkTrnNetDEh6npNaygy2qPbRZ5EerQnppjPTOHsZhxE3jWQKZoy4NZIBdmokgmHuNwXtpFYlak9bezsgM2nkFjAaymTuuxRnFqVa7ArQaiCH540AQUFSILLALtm7AsjMRdzMkYHIXgdl9nklK0sCcRvV+gFIL+xPHZesyAAAAABJRU5ErkJggg==
-width=5
-height=7
+--metrics={"baseline":5,"xHeight":2,"capHeight":0,"pairs":{},"left":[],"right":[]}
+datalen=956
+data=iVBORw0KGgoAAAANSUhEUgAAACgAAAA2CAYAAAC1ItuGAAAAAXNSR0IArs4c6QAAAoZJREFUaEPVWNFywjAMK///0dt1tzBXlSUl7cHgBWhCosiWrfDYtu1r+3s9yvf98/7qxvexMR/fx4p1vTo/HmcbDFAD4FhsB1qfje/de/c7fC7XSQAig5XVFYYYwJbRFCCyyVhOGXYMHsZXGGCMVsAuZ6cZLBr5fx9Z6BAlJjGG1zE2O37Y3wEci9dcZQCZul2usYOfQqgA1gWqyhIGXTmaqoMs8RhzVaWoWBRJArA2gpYoF+JuYwQbM/LbmVTnmcrBt8s66b3YObocxLDu87pezebS+ekCLqdQ5Sw1OtXKMqTcCCZxp+oqqJoSOL8TxRLAGcYUMzMRoq6my0FmtVROMRXPRKA9SFJm3qrkVTejQueMLBtvO1WyUdd7V4Cw/WTP7hhMzIECONO7ZW/v6pfbwB0ARePmt1WDAUTKnXtx4yt+8onro1Rc65ara8q9YO92DMr5Vyo9SwUMd2LXYhWrXokHcQyr+ewQeJDRtWI7lNQvyUQxqgnAg0jSW5fK0Zne7fzkIWc/RsVYKFWhTRmv7kepnq13CrED6AAnPV3dg9mN8edZ0urkCZv/DxPVP5XaCEgCvMJIlwJMSKy0nUSSMOQYYWK7xe18lIqvGFC0Z7ddE1Zyzd3iUnDqv57nWAfQGVY1ngCs4OT8TkVXHLEDyMDhswODdztiZbkc+JOFe5WK45DiCVT9wrn4Xwv2WnQ77CKUMGgLdRqipd7aILQ5yH7nAFQGVRtzrEVuxpUNlUOJKhOQVA8rOZg44upUWC7HnedVKnYMtuPMD55qUXDhqRsk9+AYsLtqMrDqWQ2/6rUK4CGnU4BdTUyZmC3UstWxOshCmIJbnddafhfCdPyWQ/17FX8DCtbrRhSXY/8AAAAASUVORK5CYII=
+width=4
+height=6
 
 tracking=1
 
@@ -38,13 +38,13 @@ M	4
 N	4
 P	4
 Q	4
-T	5
-U	5
-V	5
-W	5
-X	5
-Y	5
-Z	5
+T	4
+U	4
+V	4
+W	4
+X	4
+Y	4
+Z	4
 a	4
 b	4
 c	4
@@ -64,36 +64,36 @@ p	4
 q	4
 r	4
 s	4
-t	5
-u	5
-v	5
-w	5
-x	5
-y	5
-z	5
-.	5
-,	5
-/	5
-:	5
-;	5
-=	5
->	5
-<	5
-?	5
-[	5
-]	5
-^	5
-_	5
-+	5
-*	5
-)	5
-(	5
-'	5
-%	5
-$	5
-"	5
-!	5
-←	5
-&	5
-\	5
+t	4
+u	4
+v	4
+w	4
+x	4
+y	4
+z	4
+.	4
+,	4
+/	4
+:	4
+;	4
+=	4
+>	4
+<	4
+?	4
+[	4
+]	4
+^	4
+_	4
++	4
+*	4
+)	4
+(	4
+'	4
+%	4
+$	4
+"	4
+!	4
+←	4
+&	4
+\	4
 

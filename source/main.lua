@@ -99,23 +99,23 @@ local function drawScore()
   local w = 20
   local scoreImage = gfx.image.new(w, 8)
   gfx.pushContext(scoreImage)
-  gfx.drawText(score, 0, -1)
+  gfx.drawText(score, 0, 0)
   gfx.popContext()
   scoreImage = scoreImage:scaledImage(2)
   gfx.pushContext(scoreImage)
   gfx.drawTextAligned("Score", w*2, 0, kTextAlignment.right)
   gfx.popContext()
-  scoreImage:scaledImage(2):drawRotated(SCREEN_WIDTH - 40, SCREEN_HEIGHT - w*2, -90)
+  scoreImage:scaledImage(2):drawRotated(SCREEN_WIDTH - 40, SCREEN_HEIGHT - w*2 - 3, -90)
   w = 27
   local scoreImage = gfx.image.new(w, 8)
   gfx.pushContext(scoreImage)
-  gfx.drawTextAligned(hiScore, w, -1, kTextAlignment.right)
+  gfx.drawTextAligned(hiScore, w, 0, kTextAlignment.right)
   gfx.popContext()
   scoreImage = scoreImage:scaledImage(2)
   gfx.pushContext(scoreImage)
   gfx.drawText("Hi-Score", 0, 0)
   gfx.popContext()
-  scoreImage:scaledImage(2):drawRotated(SCREEN_WIDTH - 40, w*2 + 3, -90)
+  scoreImage:scaledImage(2):drawRotated(SCREEN_WIDTH - 40, w*2, -90)
 end
 
 local function saveHiScore()
@@ -166,7 +166,7 @@ local function promptCrank()
     gfx.drawText("Use crank", 0, 0)
     gfx.popContext()
   end
-  promptImage:drawRotated(SCREEN_WIDTH - (h / 2) - 5, (SCREEN_HEIGHT * 0.75), -90)
+  promptImage:scaledImage(2):drawRotated(SCREEN_WIDTH - (h / 2) - 5, (SCREEN_HEIGHT * 0.75), -90)
 end
 
 local function activeBall(balls)
