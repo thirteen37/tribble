@@ -229,5 +229,7 @@ function Ball:isDying()
 end
 
 function Ball:explode()
-  self.state = STATE_DYING
+  if self.state == STATE_IDLE then
+    self.state = STATE_DYING
+  end
 end
