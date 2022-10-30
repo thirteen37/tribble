@@ -217,13 +217,13 @@ local function splash()
   drawSplash()
   drawUI()
   promptCrank()
-  return playdate.buttonJustPressed(playdate.kButtonB) and isRotated()
+  return (playdate.buttonJustPressed(playdate.kButtonB) or playdate.buttonJustPressed(playdate.kButtonA)) and isRotated()
 end
 
 local balls = {}
 local newBall = nil
 local function play()
-  if playdate.buttonJustPressed(playdate.kButtonB) and not activeBall(balls) then
+  if (playdate.buttonJustPressed(playdate.kButtonB) or playdate.buttonJustPressed(playdate.kButtonA)) and not activeBall(balls) then
     -- create new ball
     newBall = Ball:new(SCREEN_HEIGHT / 2, SCREEN_WIDTH - 20,
                        SCREEN_HEIGHT, SCREEN_WIDTH - DMZ_WIDTH,
@@ -262,7 +262,7 @@ local function gameOver()
   updateAndDrawBalls(balls)
   drawUI()
   drawGameOver()
-  return playdate.buttonJustPressed(playdate.kButtonB)
+  return (playdate.buttonJustPressed(playdate.kButtonB) or playdate.buttonJustPressed(playdate.kButtonA))
 end
 
 function playdate.update()
