@@ -96,24 +96,26 @@ gfx.setFont(gfx.font.new("fonts/Block"))
 local score = 0
 local hiScore = 0
 local function drawScore()
-  local scoreImage = gfx.image.new(20, 8)
+  local w = 20
+  local scoreImage = gfx.image.new(w, 8)
   gfx.pushContext(scoreImage)
   gfx.drawText(score, 0, -1)
   gfx.popContext()
   scoreImage = scoreImage:scaledImage(2)
   gfx.pushContext(scoreImage)
-  gfx.drawTextAligned("Score", 40, 0, kTextAlignment.right)
+  gfx.drawTextAligned("Score", w*2, 0, kTextAlignment.right)
   gfx.popContext()
-  scoreImage:scaledImage(2):drawRotated(360, 200, -90)
-  local scoreImage = gfx.image.new(27, 8)
+  scoreImage:scaledImage(2):drawRotated(SCREEN_WIDTH - 40, SCREEN_HEIGHT - w*2, -90)
+  w = 27
+  local scoreImage = gfx.image.new(w, 8)
   gfx.pushContext(scoreImage)
-  gfx.drawTextAligned(hiScore, 27, -1, kTextAlignment.right)
+  gfx.drawTextAligned(hiScore, w, -1, kTextAlignment.right)
   gfx.popContext()
   scoreImage = scoreImage:scaledImage(2)
   gfx.pushContext(scoreImage)
   gfx.drawText("Hi-Score", 0, 0)
   gfx.popContext()
-  scoreImage:scaledImage(2):drawRotated(360, 57, -90)
+  scoreImage:scaledImage(2):drawRotated(SCREEN_WIDTH - 40, w*2 + 3, -90)
 end
 
 local function saveHiScore()
