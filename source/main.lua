@@ -3,6 +3,7 @@ import "CoreLibs/object"
 import "CoreLibs/timer"
 
 import "ball.lua"
+import "maskops.lua"
 
 local gfx <const> = playdate.graphics
 local geo <const> = playdate.geometry
@@ -25,18 +26,6 @@ local function drawZones()
   gfx.drawLine(SCREEN_WIDTH - DMZ_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH - DMZ_WIDTH, 0)
   gfx.setColor(gfx.kColorBlack)
   gfx.setLineWidth(1)
-end
-
-local function lrotate(x, n)
-  return ((x<<n)&0xff) | (x>>(8-n))
-end
-
-local function rotateArray(a, n)
-  local b = {}
-  for i, value in ipairs(a) do
-	b[(i - n) % #a + 1] = value
-  end
-  return b
 end
 
 local turretAnimator
