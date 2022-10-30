@@ -80,10 +80,47 @@ local function drawTurret()
   gfx.fillPolygon(turretPoly)
 end
 
+gfx.setFont(gfx.font.new("fonts/Block"))
+local score = 0
+local hiScore = 0
+local function drawScore()
+  local scoreImage = gfx.image.new(20, 8)
+  gfx.pushContext(scoreImage)
+  gfx.drawText(score, 0, -1)
+  gfx.popContext()
+  scoreImage = scoreImage:scaledImage(2)
+  gfx.pushContext(scoreImage)
+  gfx.drawTextAligned("Score", 40, 0, kTextAlignment.right)
+  gfx.popContext()
+  scoreImage:scaledImage(2):drawRotated(360, 200, -90)
+  local scoreImage = gfx.image.new(27, 8)
+  gfx.pushContext(scoreImage)
+  gfx.drawTextAligned(hiScore, 27, -1, kTextAlignment.right)
+  gfx.popContext()
+  scoreImage = scoreImage:scaledImage(2)
+  gfx.pushContext(scoreImage)
+  gfx.drawText("Hi-Score", 0, 0)
+  gfx.popContext()
+  scoreImage:scaledImage(2):drawRotated(360, 57, -90)
+end
+
+local function saveHiScore()
+  local ds = {
+    hiScore = hiScore
+  }
+  playdate.datastore.write(ds)
+end
+
+local function loadHiScore()
+  local ds = playdate.datastore.read()
+  hiScore = (ds and ds["hiScore"]) or 0
+end
+loadHiScore()
+
 local function drawUI()
   drawZones()
-  -- drawScore()
   drawTurret()
+  drawScore()
 end
 
 local function isRotated()
@@ -177,6 +214,17 @@ local function play()
   updateAndDrawBalls(balls)
   drawUI()
 
+  -- score kills
+  for _, ball in pairs(balls) do
+    if ball ~= newBall and ball:isDying() then
+      score += 1
+      if score > hiScore then
+        hiScore = score
+        saveHiScore()
+      end
+    end
+  end
+
   if newBall and newBall:isDying() then
     for _, ball in pairs(balls) do
       ball:explode()
@@ -203,6 +251,7 @@ function playdate.update()
     if splash() then
       playdate.stopAccelerometer()
       gfx.clear()
+      score = 0
       state = STATE_PLAY
     end
   end
