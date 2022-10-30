@@ -43,7 +43,7 @@ local turretAnimator
 local function calculateTurretAngle()
   if playdate.isCrankDocked() then
     if not turretAnimator then
-      turretAnimator = gfx.animator.new(CRANK_PERIOD, 10, 170)
+      turretAnimator = gfx.animator.new(CRANK_PERIOD, 170, 10)
       turretAnimator.reverses = true
       turretAnimator.repeatCount = -1
     end
@@ -96,8 +96,9 @@ gfx.setFont(gfx.font.new("fonts/Block"))
 local score = 0
 local hiScore = 0
 local function drawScore()
+  local _, h = gfx.getTextSize("Score")
   local w = 20
-  local scoreImage = gfx.image.new(w, 8)
+  local scoreImage = gfx.image.new(w, h)
   gfx.pushContext(scoreImage)
   gfx.drawText(score, 0, 0)
   gfx.popContext()
@@ -105,9 +106,9 @@ local function drawScore()
   gfx.pushContext(scoreImage)
   gfx.drawTextAligned("Score", w*2, 0, kTextAlignment.right)
   gfx.popContext()
-  scoreImage:scaledImage(2):drawRotated(SCREEN_WIDTH - 40, SCREEN_HEIGHT - w*2 - 3, -90)
+  scoreImage:scaledImage(2):drawRotated(SCREEN_WIDTH - 44, SCREEN_HEIGHT - w*2 - 4, -90)
   w = 27
-  local scoreImage = gfx.image.new(w, 8)
+  local scoreImage = gfx.image.new(w, h)
   gfx.pushContext(scoreImage)
   gfx.drawTextAligned(hiScore, w, 0, kTextAlignment.right)
   gfx.popContext()
@@ -115,7 +116,7 @@ local function drawScore()
   gfx.pushContext(scoreImage)
   gfx.drawText("Hi-Score", 0, 0)
   gfx.popContext()
-  scoreImage:scaledImage(2):drawRotated(SCREEN_WIDTH - 40, w*2, -90)
+  scoreImage:scaledImage(2):drawRotated(SCREEN_WIDTH - 44, w*2, -90)
 end
 
 local function saveHiScore()
@@ -158,15 +159,24 @@ local function drawSplash()
   end
 end
 
+local crankPromptAnimator
 local function promptCrank()
-  local w, h = gfx.getTextSize("Use crank")
+  local aw, h = gfx.getTextSize("Use crank")
+  local w = 40 -- (SCREEN_HEIGHT / 2 - 30) / 2
+  if not crankPromptAnimator then
+    crankPromptAnimator = gfx.animator.new(1500, 0, w - aw)
+    crankPromptAnimator.repeatCount = -1
+    crankPromptAnimator.reverses = true
+  end
   local promptImage = gfx.image.new(w, h, gfx.kColorWhite)
   if playdate.isCrankDocked() then
     gfx.pushContext(promptImage)
-    gfx.drawText("Use crank", 0, 0)
+    gfx.drawText("Use crank", crankPromptAnimator:currentValue(), 0)
     gfx.popContext()
+  else
+    crankPromptAnimator = nil
   end
-  promptImage:scaledImage(2):drawRotated(SCREEN_WIDTH - (h / 2) - 5, (SCREEN_HEIGHT * 0.75), -90)
+  promptImage:scaledImage(2):drawRotated(SCREEN_WIDTH - (h / 2) - 5, (SCREEN_HEIGHT * 0.75) + 3, -90)
 end
 
 local function activeBall(balls)
