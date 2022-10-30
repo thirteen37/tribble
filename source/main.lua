@@ -1,5 +1,5 @@
-import "CoreLibs/object"
 import "CoreLibs/graphics"
+import "CoreLibs/object"
 import "CoreLibs/timer"
 
 import "ball.lua"
@@ -9,6 +9,7 @@ local geo <const> = playdate.geometry
 
 local SCREEN_WIDTH, SCREEN_HEIGHT = playdate.display.getSize()
 local DMZ_WIDTH = 60
+local CRANK_PERIOD = 3000
 
 local STATE_SPLASH   = 1
 local STATE_PLAY     = 2
@@ -38,15 +39,26 @@ local function rotateArray(a, n)
   return b
 end
 
+local turretAnimator
 local function calculateTurretAngle()
-  local crankAngle = playdate.getCrankPosition()
-  local angle = nil
-  if crankAngle <= 180 then
-    angle = 180 - crankAngle
+  if playdate.isCrankDocked() then
+    if not turretAnimator then
+      turretAnimator = gfx.animator.new(CRANK_PERIOD, 10, 170)
+      turretAnimator.reverses = true
+      turretAnimator.repeatCount = -1
+    end
+    return turretAnimator:currentValue()
   else
-    angle = crankAngle - 180
+    turretAnimator = nil
+    local crankAngle = playdate.getCrankPosition()
+    local angle = nil
+    if crankAngle <= 180 then
+      angle = 180 - crankAngle
+    else
+      angle = crankAngle - 180
+    end
+    return math.min(170, math.max(10, angle))
   end
-  return math.min(170, math.max(10, angle))
 end
 
 local function drawTurret()
@@ -147,12 +159,12 @@ end
 local function promptCrank()
   local w, h = gfx.getTextSize("Use crank")
   local promptImage = gfx.image.new(w, h, gfx.kColorWhite)
-  if isRotated() and playdate.isCrankDocked() then
+  if playdate.isCrankDocked() then
     gfx.pushContext(promptImage)
     gfx.drawText("Use crank", 0, 0)
     gfx.popContext()
   end
-  promptImage:drawRotated(SCREEN_WIDTH - 22 - (h / 2) - 5, (SCREEN_HEIGHT * 0.75), -90)
+  promptImage:drawRotated(SCREEN_WIDTH - (h / 2) - 5, (SCREEN_HEIGHT * 0.75), -90)
 end
 
 local function activeBall(balls)
@@ -194,9 +206,9 @@ end
 
 local function splash()
   drawSplash()
-  promptCrank()
   drawUI()
-  return playdate.buttonJustPressed(playdate.kButtonB) and isRotated() and not playdate.isCrankDocked()
+  promptCrank()
+  return playdate.buttonJustPressed(playdate.kButtonB) and isRotated()
 end
 
 local balls = {}
@@ -213,6 +225,7 @@ local function play()
 
   updateAndDrawBalls(balls)
   drawUI()
+  promptCrank()
 
   -- score kills
   for _, ball in pairs(balls) do
@@ -225,6 +238,7 @@ local function play()
     end
   end
 
+  -- if our new ball died, it's game over
   if newBall and newBall:isDying() then
     for _, ball in pairs(balls) do
       ball:explode()
