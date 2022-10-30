@@ -1,3 +1,4 @@
+import "CoreLibs/animation"
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/timer"
@@ -133,12 +134,19 @@ local function isRotated()
   return angle > -10 and angle < 10
 end
 
+local rotateAnimation = gfx.animation.loop.new(nil, gfx.imagetable.new("images/rotate"))
 local function drawSplash()
   local splashImage = gfx.image.new(240, 240, gfx.kColorWhite)
   gfx.pushContext(splashImage)
-  gfx.image.new("images/splash"):draw(10, 40)
+  gfx.image.new("images/splash"):draw(10, 20)
   if not isRotated() then
-    gfx.drawText("Rotate to start", 0, 60)
+    local w, h = gfx.getTextSize("Rotate screen\nto start")
+    local rotateText = gfx.image.new(w, h)
+    gfx.pushContext(rotateText)
+    gfx.drawTextAligned("Rotate screen\nto start", w, 0, kTextAlignment.right)
+    gfx.popContext()
+    rotateText:scaledImage(2):draw(80, 180)
+    rotateAnimation:draw(210, 175)
   end
   gfx.popContext()
   if isRotated() then
