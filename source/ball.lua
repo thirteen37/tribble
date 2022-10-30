@@ -73,7 +73,7 @@ function Ball:draw()
 end
 
 function Ball:collisionSparks(x, y)
-  table.insert(self.sparks, Sparks:new(x, y, self.r, self.r, nil, nil, 1))
+  table.insert(self.sparks, Sparks:new(x, y, self.r*2, self.r*2, nil, nil, 1))
 end
 
 local function wallCollisions(ball)
@@ -201,7 +201,7 @@ function Ball:update()
       self.state = STATE_IDLE
     end
   elseif self.state == STATE_DYING then
-    table.insert(self.sparks, Sparks:new(self.x, self.y, self.r * 2, self.r * 2))
+    table.insert(self.sparks, Fragments:new(self.x, self.y, self.r * 2, self.r * 2))
     self.state = STATE_EXPLODING
   end
 end
