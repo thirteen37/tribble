@@ -138,7 +138,7 @@ local rotateAnimation = gfx.animation.loop.new(nil, gfx.imagetable.new("images/r
 local function drawSplash()
   local splashImage = gfx.image.new(240, 240, gfx.kColorWhite)
   gfx.pushContext(splashImage)
-  gfx.image.new("images/splash"):draw(10, 20)
+  gfx.image.new("images/splash"):draw(15, 50)
   if not isRotated() then
     local w, h = gfx.getTextSize("Rotate screen\nto start")
     local rotateText = gfx.image.new(w, h)
@@ -150,9 +150,9 @@ local function drawSplash()
   end
   gfx.popContext()
   if isRotated() then
-    splashImage:drawRotated(120, 120, -90)
+    splashImage:drawRotated(140, 120, -90)
   else
-    splashImage:draw(0, 0)
+    splashImage:draw(20, 0)
   end
 end
 
