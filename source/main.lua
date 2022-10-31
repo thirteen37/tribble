@@ -217,17 +217,21 @@ local function drawGameOver()
   gfx.setImageDrawMode("copy")
 end
 
+local function buttonPressed()
+  return (playdate.buttonJustPressed(playdate.kButtonB) or playdate.buttonJustPressed(playdate.kButtonA))
+end
+
 local function splash()
   drawSplash()
   drawUI()
   promptCrank()
-  return (playdate.buttonJustPressed(playdate.kButtonB) or playdate.buttonJustPressed(playdate.kButtonA)) and isRotated()
+  return buttonPressed() and isRotated()
 end
 
 local balls = {}
 local newBall = nil
 local function play()
-  if (playdate.buttonJustPressed(playdate.kButtonB) or playdate.buttonJustPressed(playdate.kButtonA)) and not activeBall(balls) then
+  if buttonPressed() and not activeBall(balls) then
     -- create new ball
     newBall = Ball:new(SCREEN_HEIGHT / 2, SCREEN_WIDTH - 20,
                        SCREEN_HEIGHT, SCREEN_WIDTH - DMZ_WIDTH,
@@ -266,7 +270,7 @@ local function gameOver()
   updateAndDrawBalls(balls)
   drawUI()
   drawGameOver()
-  return (playdate.buttonJustPressed(playdate.kButtonB) or playdate.buttonJustPressed(playdate.kButtonA))
+  return buttonPressed()
 end
 
 function playdate.update()
