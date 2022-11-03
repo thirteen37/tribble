@@ -1,6 +1,7 @@
 import "CoreLibs/animator"
 
 import "particle.lua"
+import "sound.lua"
 
 local gfx <const> = playdate.graphics
 local geo <const> = playdate.geometry
@@ -90,6 +91,7 @@ local function wallCollisions(ball)
     end
     ball.s *= ELASTICITY
     ball:collisionSparks(0, ball.y)
+    Bounce()
   end
   -- top
   if ball.y < ball.r then
@@ -104,6 +106,7 @@ local function wallCollisions(ball)
     end
     ball.s *= ELASTICITY
     ball:collisionSparks(ball.x, 0)
+    Bounce()
   end
   -- right
   if ball.x > ball.w - ball.r then
@@ -118,6 +121,7 @@ local function wallCollisions(ball)
     end
     ball.s *= ELASTICITY
     ball:collisionSparks(ball.w, ball.y)
+    Bounce()
   end
   ball.a = ball.a % 360
 end
@@ -147,6 +151,7 @@ local function ballCollisions(ball)
         ball.x += dx
         ball.y += dy
         ball.s *= ELASTICITY
+        Bounce(otherBall.r)
       end
     end
   end
@@ -202,6 +207,7 @@ function Ball:update()
     end
   elseif self.state == STATE_DYING then
     table.insert(self.sparks, Fragments:new(self.x, self.y, self.r * 2, self.r * 2))
+    Explode(self.r)
     self.state = STATE_EXPLODING
   end
 end
