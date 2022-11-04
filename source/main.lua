@@ -87,7 +87,7 @@ local score = 0
 local hiScore = 0
 local function drawScore()
   local _, h = gfx.getTextSize("Score")
-  local w = 20
+  local w = 18
   local scoreImage = gfx.image.new(w, h)
   gfx.pushContext(scoreImage)
   gfx.drawText(score, 0, 0)
@@ -97,10 +97,10 @@ local function drawScore()
   gfx.drawTextAligned("Score", w*2, 0, kTextAlignment.right)
   gfx.popContext()
   scoreImage:scaledImage(2):drawRotated(SCREEN_WIDTH - 44, SCREEN_HEIGHT - w*2 - 4, -90)
-  w = 27
+  w = 25
   local scoreImage = gfx.image.new(w, h)
   gfx.pushContext(scoreImage)
-  gfx.drawTextAligned(hiScore, w, 0, kTextAlignment.right)
+  gfx.drawTextAligned(hiScore, w-1, 0, kTextAlignment.right)
   gfx.popContext()
   scoreImage = scoreImage:scaledImage(2)
   gfx.pushContext(scoreImage)
@@ -150,7 +150,7 @@ local function drawSplash()
     gfx.pushContext(rotateText)
     gfx.drawTextAligned("Rotate screen\nto start", w, 0, kTextAlignment.right)
     gfx.popContext()
-    rotateText:scaledImage(2):draw(80, 180)
+    rotateText:scaledImage(2):draw(105, 180)
     rotateAnimation:draw(210, 175)
   end
   gfx.popContext()
