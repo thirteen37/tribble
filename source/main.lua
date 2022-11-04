@@ -130,8 +130,13 @@ end
 
 local function isRotated()
   local accel_x, accel_y, accel_z = playdate.readAccelerometer()
-  local angle = math.deg(math.atan(accel_y, accel_x))
-  return angle > -10 and angle < 10
+  local xAngle = math.deg(math.atan((accel_x ^ 2 + accel_y ^ 2) ^ 0.5, accel_z))
+  if xAngle > 45 then
+    local zAngle = math.deg(math.atan(accel_y, accel_x))
+    return zAngle > -20 and zAngle < 20
+  else
+    return true
+  end
 end
 
 local rotateAnimation = gfx.animation.loop.new(nil, gfx.imagetable.new("images/rotate"))
