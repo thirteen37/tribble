@@ -28,19 +28,16 @@ function Sparks:new(x, y, w, h, t, s)
   t = t or DEFAULT_DURATION
   s = s or DEFAULT_SCALE
   o.sa = gfx.animator.new(t, 0, s, playdate.easingFunctions.outCubic)
-  o.ba = gfx.animator.new(t, 0, 1, playdate.easingFunctions.outCubic)
   return o
 end
 
 function Sparks:draw()
   gfx.setImageDrawMode("NXOR")
-  if not self.sa:ended() and not self.ba:ended() then
+  if not self.sa:ended() then
     local s = self.sa:currentValue()
-    local b = self.ba:currentValue()
-    local i = sparkImage:scaledImage(b)
     for _, value in pairs(self.s) do
       local x, y = value[1], value[2]
-      i:drawCentered(self.x + x * s, self.y + y * s)
+      sparkImage:drawCentered(self.x + x * s, self.y + y * s)
     end
     return true
   else
@@ -76,11 +73,11 @@ end
 function Fragments:draw()
   if not self.sa:ended() then
     local s = self.sa:currentValue()
+    local t = geo.affineTransform.new()
+    t:scale(s)
+    t:translate(self.x, self.y)
     gfx.setColor(gfx.kColorXOR)
     for _, p in pairs(self.f) do
-      local t = geo.affineTransform.new()
-      t:scale(s)
-      t:translate(self.x, self.y)
       gfx.fillPolygon(t:transformedPolygon(p))
     end
     gfx.setColor(gfx.kColorBlack)
