@@ -70,14 +70,12 @@ function Fragments:new(x, y, w, h, t, s)
   t = t or DEFAULT_DURATION
   s = s or DEFAULT_SCALE
   o.sa = gfx.animator.new(t, 0, s, playdate.easingFunctions.outCubic)
-  o.aa = gfx.animator.new(t, 0, 1, playdate.easingFunctions.outCubic)
   return o
 end
 
 function Fragments:draw()
-  if not self.sa:ended() and not self.aa:ended() then
+  if not self.sa:ended() then
     local s = self.sa:currentValue()
-    local a = self.aa:currentValue()
     gfx.setColor(gfx.kColorXOR)
     for _, p in pairs(self.f) do
       local t = geo.affineTransform.new()
