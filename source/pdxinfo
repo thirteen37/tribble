@@ -3,4 +3,5 @@ author=thirteen37
 description=Puzzle Bobble-style game. Gimme Friction Baby clone.
 bundleID=io.lyx.tribble
 version=1.0
+buildNumber=47
 imagePath=images/launcher
